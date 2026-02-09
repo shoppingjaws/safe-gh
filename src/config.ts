@@ -94,7 +94,7 @@ export function initConfig(): string {
   "issueRules": [
     {
       "name": "Read only",
-      "operations": ["read"],
+      "operations": ["list", "view", "list:comments"],
       "condition": { "owners": ["my-org"] }
     },
     {
@@ -112,7 +112,7 @@ export function initConfig(): string {
   "prRules": [
     {
       "name": "Read only",
-      "operations": ["read"],
+      "operations": ["list", "view", "diff", "checks", "list:comments"],
       "condition": { "owners": ["my-org"] }
     },
     {
@@ -133,7 +133,7 @@ export function initConfig(): string {
   "projectRules": [
     {
       "name": "Read all projects",
-      "operations": ["read"]
+      "operations": ["list", "view", "item:list", "field:list"]
     }
   ],
 

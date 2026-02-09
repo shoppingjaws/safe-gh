@@ -183,7 +183,7 @@ async function getPrContext(
 
 export async function listIssues(repo?: string): Promise<Issue[]> {
   const context: OperationContext = { repo };
-  ensurePermission("issue", "read", context);
+  ensurePermission("issue", "list", context);
 
   const args = [
     "issue",
@@ -202,7 +202,7 @@ export async function viewIssue(
   repo?: string
 ): Promise<Issue> {
   const context: OperationContext = { repo, issueNumber };
-  ensurePermission("issue", "read", context);
+  ensurePermission("issue", "view", context);
 
   const args = [
     "issue",
@@ -408,7 +408,7 @@ export async function listComments(
   repo?: string
 ): Promise<Comment[]> {
   const context: OperationContext = { repo, issueNumber };
-  ensurePermission("issue", "read", context);
+  ensurePermission("issue", "list:comments", context);
 
   const apiPath = repo
     ? `/repos/${repo}/issues/${issueNumber}/comments`
@@ -438,7 +438,7 @@ export async function listComments(
 
 export async function listPrs(repo?: string): Promise<PullRequest[]> {
   const context: OperationContext = { repo };
-  ensurePermission("pr", "read", context);
+  ensurePermission("pr", "list", context);
 
   const args = [
     "pr",
@@ -457,7 +457,7 @@ export async function viewPr(
   repo?: string
 ): Promise<PullRequest> {
   const context: OperationContext = { repo, prNumber };
-  ensurePermission("pr", "read", context);
+  ensurePermission("pr", "view", context);
 
   const args = [
     "pr",
@@ -614,7 +614,7 @@ export async function diffPr(
   repo?: string
 ): Promise<string> {
   const context: OperationContext = { repo, prNumber };
-  ensurePermission("pr", "read", context);
+  ensurePermission("pr", "diff", context);
 
   const args = ["pr", "diff", String(prNumber)];
   if (repo) args.push("-R", repo);
@@ -627,7 +627,7 @@ export async function checksPr(
   repo?: string
 ): Promise<string> {
   const context: OperationContext = { repo, prNumber };
-  ensurePermission("pr", "read", context);
+  ensurePermission("pr", "checks", context);
 
   const args = ["pr", "checks", String(prNumber)];
   if (repo) args.push("-R", repo);
@@ -677,7 +677,7 @@ export async function listPrComments(
   repo?: string
 ): Promise<Comment[]> {
   const context: OperationContext = { repo, prNumber };
-  ensurePermission("pr", "read", context);
+  ensurePermission("pr", "list:comments", context);
 
   // PRs use issue comments API (PR is also an issue on GitHub)
   const apiPath = repo
@@ -805,7 +805,7 @@ export async function searchCommits(
 
 export async function listProjects(owner?: string): Promise<string> {
   const context: OperationContext = { projectOwner: owner };
-  ensurePermission("project", "read", context);
+  ensurePermission("project", "list", context);
 
   const args = ["project", "list"];
   if (owner) args.push("--owner", owner);
@@ -822,7 +822,7 @@ export async function viewProject(
     projectNumber,
     projectOwner: owner,
   };
-  ensurePermission("project", "read", context);
+  ensurePermission("project", "view", context);
 
   const args = ["project", "view", String(projectNumber)];
   if (owner) args.push("--owner", owner);
@@ -839,7 +839,7 @@ export async function projectFieldList(
     projectNumber,
     projectOwner: owner,
   };
-  ensurePermission("project", "read", context);
+  ensurePermission("project", "field:list", context);
 
   const args = ["project", "field-list", String(projectNumber)];
   if (owner) args.push("--owner", owner);
@@ -856,7 +856,7 @@ export async function projectItemList(
     projectNumber,
     projectOwner: owner,
   };
-  ensurePermission("project", "read", context);
+  ensurePermission("project", "item:list", context);
 
   const args = ["project", "item-list", String(projectNumber)];
   if (owner) args.push("--owner", owner);

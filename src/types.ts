@@ -5,7 +5,9 @@ import { z } from "zod";
 // ============================================================
 
 export const IssueOperationValues = [
-  "read",
+  "list",
+  "view",
+  "list:comments",
   "create",
   "update",
   "close",
@@ -17,7 +19,11 @@ export const IssueOperationValues = [
 ] as const;
 
 export const PrOperationValues = [
-  "read",
+  "list",
+  "view",
+  "diff",
+  "checks",
+  "list:comments",
   "create",
   "update",
   "close",
@@ -39,7 +45,10 @@ export const SearchOperationValues = [
 ] as const;
 
 export const ProjectOperationValues = [
-  "read",
+  "list",
+  "view",
+  "field:list",
+  "item:list",
   "create",
   "edit",
   "close",

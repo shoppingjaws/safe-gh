@@ -8,7 +8,7 @@
   "issueRules": [
     {
       "name": "Read only",
-      "operations": ["read"]
+      "operations": ["list", "view", "list:comments"]
     },
     {
       "name": "Comment and manage own comments",
@@ -29,7 +29,7 @@
   "prRules": [
     {
       "name": "Read only",
-      "operations": ["read"]
+      "operations": ["list", "view", "diff", "checks", "list:comments"]
     },
     {
       "name": "Comment and manage own comments",
@@ -62,7 +62,7 @@
   "projectRules": [
     {
       "name": "Read and edit items in project 50",
-      "operations": ["read", "item:edit", "item:add"],
+      "operations": ["list", "view", "item:list", "field:list", "item:edit", "item:add"],
       "condition": {
         "owner": ["StudistCorporation"],
         "projectNumbers": [50]
@@ -70,7 +70,7 @@
     },
     {
       "name": "Read all projects",
-      "operations": ["read"]
+      "operations": ["list", "view", "item:list", "field:list"]
     }
   ],
 

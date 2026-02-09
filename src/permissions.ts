@@ -203,7 +203,11 @@ export function checkPermission(
   }
 
   // Default permission fallback
-  const readOperations = ["read"];
+  const readOperations = [
+    "list", "view", "list:comments",
+    "diff", "checks",
+    "field:list", "item:list",
+  ];
   if (
     config.defaultPermission === "read" &&
     readOperations.includes(operation)
