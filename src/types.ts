@@ -132,16 +132,6 @@ export const ProjectRuleSchema = z.object({
 export type ProjectRule = z.infer<typeof ProjectRuleSchema>;
 
 // ============================================================
-// AI marker configuration
-// ============================================================
-
-export const AiMarkerConfigSchema = z.object({
-  enabled: z.boolean().default(true),
-  visiblePrefix: z.string().default("🤖 "),
-});
-export type AiMarkerConfig = z.infer<typeof AiMarkerConfigSchema>;
-
-// ============================================================
 // Config schema
 // ============================================================
 
@@ -150,10 +140,6 @@ export const ConfigSchema = z.object({
   prRules: z.array(PrRuleSchema).default([]),
   searchRules: z.array(SearchRuleSchema).default([]),
   projectRules: z.array(ProjectRuleSchema).default([]),
-  aiMarker: AiMarkerConfigSchema.default({
-    enabled: true,
-    visiblePrefix: "🤖 ",
-  }),
   selfUserId: z.string().optional(),
   defaultPermission: z.enum(["deny", "read"]).default("deny"),
 });
@@ -175,7 +161,6 @@ export interface PermissionCheckResult {
 
 export type ErrorCode =
   | "PERMISSION_DENIED"
-  | "NOT_AI_COMMENT"
   | "NOT_OWNER"
   | "CONFIG_ERROR"
   | "GH_CLI_ERROR"

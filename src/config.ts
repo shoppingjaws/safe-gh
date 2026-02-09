@@ -1,4 +1,5 @@
 import { readFileSync, existsSync, mkdirSync, writeFileSync } from "node:fs";
+import { execFileSync } from "node:child_process";
 import { homedir } from "node:os";
 import { join, dirname } from "node:path";
 import { parse as parseJsonc } from "jsonc-parser";
@@ -65,12 +66,26 @@ export function validateConfig(configPath?: string): {
   }
 }
 
+function resolveGhLogin(): string {
+  try {
+    return execFileSync("gh", ["api", "user", "--jq", ".login"], {
+      encoding: "utf-8",
+      timeout: 10_000,
+    }).trim();
+  } catch {
+    return "";
+  }
+}
+
 export function initConfig(): string {
   if (existsSync(CONFIG_PATH)) {
     throw new Error(`Config file already exists: ${CONFIG_PATH}`);
   }
 
+  const selfUserId = resolveGhLogin();
+
   const template = `{
+  "$schema": "https://raw.githubusercontent.com/shoppingjaws/safe-gh/refs/heads/main/config.schema.json",
   // Safe GH - Configuration
   // Each section (issueRules / prRules / searchRules / projectRules)
   // has its own set of operations and conditions.
@@ -117,14 +132,8 @@ export function initConfig(): string {
     }
   ],
 
-  // AI marker settings for comments
-  "aiMarker": {
-    "enabled": true,
-    "visiblePrefix": "🤖 "
-  },
   // GitHub user ID for "createdBy": "self" / "assignee": "self" conditions
-  // Get your user ID with: gh api user --jq .login
-  "selfUserId": "",
+  "selfUserId": "${selfUserId}",
   // Default behavior when no rule matches: "deny" or "read"
   "defaultPermission": "deny"
 }

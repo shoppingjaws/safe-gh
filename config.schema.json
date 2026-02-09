@@ -1,0 +1,197 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Safe GH Configuration",
+  "description": "Configuration file for safe-gh. Rules are evaluated in order; first matching rule applies.",
+  "type": "object",
+  "properties": {
+    "issueRules": {
+      "type": "array",
+      "default": [],
+      "items": { "$ref": "#/$defs/issueRule" }
+    },
+    "prRules": {
+      "type": "array",
+      "default": [],
+      "items": { "$ref": "#/$defs/prRule" }
+    },
+    "searchRules": {
+      "type": "array",
+      "default": [],
+      "items": { "$ref": "#/$defs/searchRule" }
+    },
+    "projectRules": {
+      "type": "array",
+      "default": [],
+      "items": { "$ref": "#/$defs/projectRule" }
+    },
+    "selfUserId": {
+      "type": "string",
+      "description": "GitHub login name for \"createdBy\": \"self\" / \"assignee\": \"self\" conditions. Get with: gh api user --jq .login"
+    },
+    "defaultPermission": {
+      "type": "string",
+      "enum": ["deny", "read"],
+      "default": "deny",
+      "description": "Default behavior when no rule matches."
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "labelCondition": {
+      "type": "object",
+      "properties": {
+        "include": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "exclude": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      },
+      "additionalProperties": false
+    },
+    "commonCondition": {
+      "type": "object",
+      "properties": {
+        "createdBy": {
+          "type": "string",
+          "const": "self"
+        },
+        "assignee": {
+          "type": "string",
+          "const": "self"
+        },
+        "labels": { "$ref": "#/$defs/labelCondition" },
+        "repos": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      },
+      "additionalProperties": false
+    },
+    "issueCondition": { "$ref": "#/$defs/commonCondition" },
+    "prCondition": {
+      "type": "object",
+      "properties": {
+        "createdBy": {
+          "type": "string",
+          "const": "self"
+        },
+        "assignee": {
+          "type": "string",
+          "const": "self"
+        },
+        "labels": { "$ref": "#/$defs/labelCondition" },
+        "repos": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "draft": {
+          "type": "boolean"
+        },
+        "baseBranch": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "headBranch": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "reviewDecision": {
+          "type": "string",
+          "enum": ["APPROVED", "CHANGES_REQUESTED", "REVIEW_REQUIRED"]
+        }
+      },
+      "additionalProperties": false
+    },
+    "searchCondition": {
+      "type": "object",
+      "properties": {
+        "repos": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      },
+      "additionalProperties": false
+    },
+    "projectCondition": {
+      "type": "object",
+      "properties": {
+        "owner": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "projectNumbers": {
+          "type": "array",
+          "items": { "type": "number" }
+        }
+      },
+      "additionalProperties": false
+    },
+    "issueRule": {
+      "type": "object",
+      "required": ["name", "operations"],
+      "properties": {
+        "name": { "type": "string" },
+        "operations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["read", "create", "update", "close", "reopen", "delete", "comment", "comment:edit", "comment:delete"]
+          }
+        },
+        "condition": { "$ref": "#/$defs/issueCondition" }
+      },
+      "additionalProperties": false
+    },
+    "prRule": {
+      "type": "object",
+      "required": ["name", "operations"],
+      "properties": {
+        "name": { "type": "string" },
+        "operations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["read", "create", "update", "close", "reopen", "merge", "review", "update-branch", "comment", "comment:edit", "comment:delete"]
+          }
+        },
+        "condition": { "$ref": "#/$defs/prCondition" }
+      },
+      "additionalProperties": false
+    },
+    "searchRule": {
+      "type": "object",
+      "required": ["name", "operations"],
+      "properties": {
+        "name": { "type": "string" },
+        "operations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["code", "issues", "prs", "repos", "commits"]
+          }
+        },
+        "condition": { "$ref": "#/$defs/searchCondition" }
+      },
+      "additionalProperties": false
+    },
+    "projectRule": {
+      "type": "object",
+      "required": ["name", "operations"],
+      "properties": {
+        "name": { "type": "string" },
+        "operations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["read", "create", "edit", "close", "delete", "item:add", "item:create", "item:edit", "item:delete", "item:archive", "field:create", "field:delete"]
+          }
+        },
+        "condition": { "$ref": "#/$defs/projectCondition" }
+      },
+      "additionalProperties": false
+    }
+  }
+}

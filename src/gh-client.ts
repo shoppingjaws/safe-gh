@@ -1,6 +1,5 @@
 import { loadConfig } from "./config.ts";
 import { checkPermission, operationNeedsContext } from "./permissions.ts";
-import { addAiMarker, hasAiMarker } from "./ai-marker.ts";
 import type {
   Config,
   OperationContext,
@@ -328,10 +327,7 @@ export async function commentIssue(
   }
   ensurePermission("issue", "comment", context);
 
-  const config = getConfig();
-  const markedBody = addAiMarker(body, config.aiMarker);
-
-  const args = ["issue", "comment", String(issueNumber), "--body", markedBody];
+  const args = ["issue", "comment", String(issueNumber), "--body", body];
   if (repo) args.push("-R", repo);
 
   await execGh(args);
@@ -380,24 +376,11 @@ export async function editComment(
   }
   ensurePermission("issue", "comment:edit", context);
 
-  const comment = await getComment(issueNumber, commentId, repo);
-  if (!hasAiMarker(comment.body)) {
-    const error: ErrorResponse = {
-      error: "Cannot edit non-AI comment: missing AI marker",
-      code: "NOT_AI_COMMENT",
-      details: { commentId, issueNumber },
-    };
-    throw error;
-  }
-
-  const config = getConfig();
-  const markedBody = addAiMarker(newBody, config.aiMarker);
-
   const apiPath = repo
     ? `/repos/${repo}/issues/comments/${commentId}`
     : `/repos/{owner}/{repo}/issues/comments/${commentId}`;
 
-  await execGh(["api", apiPath, "-X", "PATCH", "-f", `body=${markedBody}`]);
+  await execGh(["api", apiPath, "-X", "PATCH", "-f", `body=${newBody}`]);
 }
 
 export async function deleteComment(
@@ -412,16 +395,6 @@ export async function deleteComment(
     context = { repo, issueNumber };
   }
   ensurePermission("issue", "comment:delete", context);
-
-  const comment = await getComment(issueNumber, commentId, repo);
-  if (!hasAiMarker(comment.body)) {
-    const error: ErrorResponse = {
-      error: "Cannot delete non-AI comment: missing AI marker",
-      code: "NOT_AI_COMMENT",
-      details: { commentId, issueNumber },
-    };
-    throw error;
-  }
 
   const apiPath = repo
     ? `/repos/${repo}/issues/comments/${commentId}`
@@ -693,10 +666,7 @@ export async function commentPr(
   }
   ensurePermission("pr", "comment", context);
 
-  const config = getConfig();
-  const markedBody = addAiMarker(body, config.aiMarker);
-
-  const args = ["pr", "comment", String(prNumber), "--body", markedBody];
+  const args = ["pr", "comment", String(prNumber), "--body", body];
   if (repo) args.push("-R", repo);
 
   await execGh(args);
@@ -746,24 +716,11 @@ export async function editPrComment(
   }
   ensurePermission("pr", "comment:edit", context);
 
-  const comment = await getComment(0, commentId, repo);
-  if (!hasAiMarker(comment.body)) {
-    const error: ErrorResponse = {
-      error: "Cannot edit non-AI comment: missing AI marker",
-      code: "NOT_AI_COMMENT",
-      details: { commentId, prNumber },
-    };
-    throw error;
-  }
-
-  const config = getConfig();
-  const markedBody = addAiMarker(newBody, config.aiMarker);
-
   const apiPath = repo
     ? `/repos/${repo}/issues/comments/${commentId}`
     : `/repos/{owner}/{repo}/issues/comments/${commentId}`;
 
-  await execGh(["api", apiPath, "-X", "PATCH", "-f", `body=${markedBody}`]);
+  await execGh(["api", apiPath, "-X", "PATCH", "-f", `body=${newBody}`]);
 }
 
 export async function deletePrComment(
@@ -778,16 +735,6 @@ export async function deletePrComment(
     context = { repo, prNumber };
   }
   ensurePermission("pr", "comment:delete", context);
-
-  const comment = await getComment(0, commentId, repo);
-  if (!hasAiMarker(comment.body)) {
-    const error: ErrorResponse = {
-      error: "Cannot delete non-AI comment: missing AI marker",
-      code: "NOT_AI_COMMENT",
-      details: { commentId, prNumber },
-    };
-    throw error;
-  }
 
   const apiPath = repo
     ? `/repos/${repo}/issues/comments/${commentId}`
