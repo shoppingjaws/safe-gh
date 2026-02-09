@@ -12,7 +12,37 @@ import type {
   PrOperation,
   SearchOperation,
   ProjectOperation,
+  PermissionCheckResult,
 } from "./types.ts";
+
+// ============================================================
+// Dry-run support
+// ============================================================
+
+let dryRunMode = false;
+
+export function setDryRun(enabled: boolean): void {
+  dryRunMode = enabled;
+}
+
+export class DryRunResult {
+  readonly resource: ResourceType;
+  readonly operation: string;
+  readonly context: OperationContext;
+  readonly result: PermissionCheckResult;
+
+  constructor(
+    resource: ResourceType,
+    operation: string,
+    context: OperationContext,
+    result: PermissionCheckResult
+  ) {
+    this.resource = resource;
+    this.operation = operation;
+    this.context = context;
+    this.result = result;
+  }
+}
 
 let configInstance: Config | null = null;
 
@@ -96,6 +126,10 @@ function ensurePermission(
     operation as IssueOperation,
     context
   );
+
+  if (dryRunMode) {
+    throw new DryRunResult(resource, operation, context, result);
+  }
 
   if (!result.allowed) {
     const error: ErrorResponse = {

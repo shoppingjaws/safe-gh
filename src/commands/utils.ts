@@ -1,10 +1,24 @@
 import type { ErrorResponse } from "../types.ts";
+import { DryRunResult } from "../gh-client.ts";
 
 export function outputJson(data: unknown): void {
   console.log(JSON.stringify(data, null, 2));
 }
 
 export function handleError(error: unknown): never {
+  if (error instanceof DryRunResult) {
+    outputJson({
+      dryRun: true,
+      resource: error.resource,
+      operation: error.operation,
+      context: error.context,
+      allowed: error.result.allowed,
+      ruleName: error.result.ruleName,
+      reason: error.result.reason,
+    });
+    process.exit(0);
+  }
+
   if (isErrorResponse(error)) {
     outputJson(error);
     process.exit(1);
