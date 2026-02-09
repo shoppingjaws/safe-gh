@@ -73,6 +73,7 @@ const CommonConditionSchema = z.object({
   assignee: z.literal("self").optional(),
   labels: LabelConditionSchema.optional(),
   repos: z.array(z.string()).optional(),
+  owners: z.array(z.string()).optional(),
 });
 
 export const IssueConditionSchema = CommonConditionSchema;
@@ -90,6 +91,7 @@ export type PrCondition = z.infer<typeof PrConditionSchema>;
 
 export const SearchConditionSchema = z.object({
   repos: z.array(z.string()).optional(),
+  owners: z.array(z.string()).optional(),
 });
 export type SearchCondition = z.infer<typeof SearchConditionSchema>;
 

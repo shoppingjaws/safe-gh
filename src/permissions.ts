@@ -18,7 +18,7 @@ import type {
 // ============================================================
 
 function checkCommonCondition(
-  condition: { createdBy?: "self"; assignee?: "self"; labels?: { include?: string[]; exclude?: string[] }; repos?: string[] },
+  condition: { createdBy?: "self"; assignee?: "self"; labels?: { include?: string[]; exclude?: string[] }; repos?: string[]; owners?: string[] },
   context: OperationContext,
   selfUserId: string | undefined
 ): boolean {
@@ -55,6 +55,13 @@ function checkCommonCondition(
   if (condition.repos && condition.repos.length > 0) {
     if (!context.repo) return false;
     if (!condition.repos.includes(context.repo)) return false;
+  }
+
+  // owners
+  if (condition.owners && condition.owners.length > 0) {
+    if (!context.repo) return false;
+    const owner = context.repo.split("/")[0];
+    if (!owner || !condition.owners.includes(owner)) return false;
   }
 
   return true;
@@ -106,6 +113,11 @@ function checkSearchCondition(
   if (condition.repos && condition.repos.length > 0) {
     if (!context.repo) return false;
     if (!condition.repos.includes(context.repo)) return false;
+  }
+  if (condition.owners && condition.owners.length > 0) {
+    if (!context.repo) return false;
+    const owner = context.repo.split("/")[0];
+    if (!owner || !condition.owners.includes(owner)) return false;
   }
   return true;
 }

@@ -94,34 +94,39 @@ export function initConfig(): string {
   "issueRules": [
     {
       "name": "Read only",
-      "operations": ["read"]
+      "operations": ["read"],
+      "condition": { "owners": ["my-org"] }
     },
     {
       "name": "Comment and manage own comments",
-      "operations": ["comment", "comment:edit", "comment:delete"]
+      "operations": ["comment", "comment:edit", "comment:delete"],
+      "condition": { "owners": ["my-org"] }
     },
     {
       "name": "Manage assigned issues",
       "operations": ["update", "close", "reopen"],
-      "condition": { "assignee": "self" }
+      "condition": { "assignee": "self", "owners": ["my-org"] }
     }
   ],
 
   "prRules": [
     {
       "name": "Read only",
-      "operations": ["read"]
+      "operations": ["read"],
+      "condition": { "owners": ["my-org"] }
     },
     {
       "name": "Comment and manage own comments",
-      "operations": ["comment", "comment:edit", "comment:delete"]
+      "operations": ["comment", "comment:edit", "comment:delete"],
+      "condition": { "owners": ["my-org"] }
     }
   ],
 
   "searchRules": [
     {
-      "name": "Search all",
-      "operations": ["code", "issues", "prs", "repos", "commits"]
+      "name": "Search within org",
+      "operations": ["code", "issues", "prs", "repos", "commits"],
+      "condition": { "owners": ["my-org"] }
     }
   ],
 

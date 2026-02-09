@@ -55,7 +55,7 @@
     {
       "name": "Search within org repos",
       "operations": ["code", "issues", "prs", "commits"],
-      "condition": { "repos": ["myorg/*"] }
+      "condition": { "owners": ["myorg"] }
     }
   ],
 

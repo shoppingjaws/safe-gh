@@ -66,6 +66,11 @@
         "repos": {
           "type": "array",
           "items": { "type": "string" }
+        },
+        "owners": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Restrict to repositories owned by these users/organizations."
         }
       },
       "additionalProperties": false
@@ -86,6 +91,11 @@
         "repos": {
           "type": "array",
           "items": { "type": "string" }
+        },
+        "owners": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Restrict to repositories owned by these users/organizations."
         },
         "draft": {
           "type": "boolean"
@@ -111,6 +121,11 @@
         "repos": {
           "type": "array",
           "items": { "type": "string" }
+        },
+        "owners": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Restrict to repositories owned by these users/organizations."
         }
       },
       "additionalProperties": false
