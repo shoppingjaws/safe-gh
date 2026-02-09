@@ -1,0 +1,88 @@
+{
+  // Safe GH - Configuration
+  // Each section (issueRules / prRules / searchRules / projectRules)
+  // has its own set of operations and conditions.
+  // Rules are evaluated in order; first matching rule applies.
+
+  "issueRules": [
+    {
+      "name": "Read only",
+      "operations": ["read"]
+    },
+    {
+      "name": "Comment and manage own comments",
+      "operations": ["comment", "comment:edit", "comment:delete"]
+    },
+    {
+      "name": "Manage assigned issues",
+      "operations": ["update", "close", "reopen"],
+      "condition": { "assignee": "self" }
+    },
+    {
+      "name": "Manage self-created issues",
+      "operations": ["update", "close"],
+      "condition": { "createdBy": "self" }
+    }
+  ],
+
+  "prRules": [
+    {
+      "name": "Read only",
+      "operations": ["read"]
+    },
+    {
+      "name": "Comment and manage own comments",
+      "operations": ["comment", "comment:edit", "comment:delete"]
+    },
+    {
+      "name": "Merge approved PRs to develop",
+      "operations": ["merge"],
+      "condition": {
+        "draft": false,
+        "reviewDecision": "APPROVED",
+        "baseBranch": ["develop"]
+      }
+    },
+    {
+      "name": "Create PRs to develop only",
+      "operations": ["create"],
+      "condition": { "baseBranch": ["develop"] }
+    }
+  ],
+
+  "searchRules": [
+    {
+      "name": "Search within org repos",
+      "operations": ["code", "issues", "prs", "commits"],
+      "condition": { "repos": ["myorg/*"] }
+    }
+  ],
+
+  "projectRules": [
+    {
+      "name": "Read and edit items in project 50",
+      "operations": ["read", "item:edit", "item:add"],
+      "condition": {
+        "owner": ["StudistCorporation"],
+        "projectNumbers": [50]
+      }
+    },
+    {
+      "name": "Read all projects",
+      "operations": ["read"]
+    }
+  ],
+
+  // AI marker settings for comments
+  "aiMarker": {
+    // Enable invisible marker in comments (required for edit/delete validation)
+    "enabled": true,
+    // Visible prefix for AI comments (set to "" to hide)
+    "visiblePrefix": "🤖 "
+  },
+  // GitHub user ID for "createdBy": "self" / "assignee": "self" conditions
+  // Get your user ID with: gh api user --jq .login
+  "selfUserId": "",
+  // Default behavior when no rule matches: "deny" or "read"
+  "defaultPermission": "deny"
+}

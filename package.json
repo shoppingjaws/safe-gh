@@ -1,0 +1,60 @@
+{
+  "name": "safe-gh",
+  "version": "0.1.0",
+  "description": "A safe GitHub CLI wrapper for AI agents with granular permission control",
+  "license": "MIT",
+  "author": "shoppingjaws",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/shoppingjaws/safe-gh.git"
+  },
+  "homepage": "https://github.com/shoppingjaws/safe-gh#readme",
+  "bugs": {
+    "url": "https://github.com/shoppingjaws/safe-gh/issues"
+  },
+  "keywords": [
+    "github",
+    "gh",
+    "cli",
+    "ai",
+    "agent",
+    "permission",
+    "security"
+  ],
+  "type": "module",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "safe-gh": "dist/index.js"
+  },
+  "files": [
+    "dist",
+    "config.sample.jsonc"
+  ],
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "bun build src/index.ts --outdir dist --target node --format esm --packages external && bun run build:types",
+    "build:types": "tsc -p tsconfig.build.json",
+    "prepublishOnly": "bun run build",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/node": "^22.0.0",
+    "typescript": "^5.8.0"
+  },
+  "dependencies": {
+    "commander": "^14.0.2",
+    "jsonc-parser": "^3.3.1",
+    "zod": "^4.3.6"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}
