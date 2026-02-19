@@ -1,8 +1,56 @@
-import type { ErrorResponse } from "../types.ts";
+import type { Enforce, ErrorResponse } from "../types.ts";
 import { DryRunResult, isGhCliError } from "../gh.ts";
+
+export function appendMarker(body: string): string {
+  return `${body}\n<!-- safe-gh: ${new Date().toISOString()} -->`;
+}
 
 export function outputJson(data: unknown): void {
   console.log(JSON.stringify(data, null, 2));
+}
+
+export function buildEnforceArgs(
+  enforce: Enforce,
+  selfUserId: string | undefined
+): string[] {
+  const args: string[] = [];
+
+  function resolveSelf(value: string): string {
+    if (value === "self") {
+      if (!selfUserId) {
+        throw {
+          error:
+            'enforce uses "self" but selfUserId is not configured. Set selfUserId in config.',
+          code: "CONFIG_ERROR",
+        } satisfies ErrorResponse;
+      }
+      return selfUserId;
+    }
+    return value;
+  }
+
+  if (enforce.addLabels) {
+    for (const label of enforce.addLabels) {
+      args.push("--add-label", label);
+    }
+  }
+  if (enforce.removeLabels) {
+    for (const label of enforce.removeLabels) {
+      args.push("--remove-label", label);
+    }
+  }
+  if (enforce.addAssignees) {
+    for (const assignee of enforce.addAssignees) {
+      args.push("--add-assignee", resolveSelf(assignee));
+    }
+  }
+  if (enforce.removeAssignees) {
+    for (const assignee of enforce.removeAssignees) {
+      args.push("--remove-assignee", resolveSelf(assignee));
+    }
+  }
+
+  return args;
 }
 
 export function handleError(error: unknown): never {
@@ -14,6 +62,7 @@ export function handleError(error: unknown): never {
       allowed: error.result.allowed,
       ruleName: error.result.ruleName,
       reason: error.result.reason,
+      enforce: error.result.enforce,
     });
     process.exit(0);
   }

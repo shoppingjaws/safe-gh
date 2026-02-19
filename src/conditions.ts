@@ -100,6 +100,7 @@ export function evaluateRules(
       allowed: true,
       ruleName: rule.name,
       reason: `Allowed by rule '${rule.name}'`,
+      enforce: rule.enforce,
     };
   }
 

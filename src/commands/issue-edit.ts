@@ -3,7 +3,7 @@ import { loadConfig } from "../config.ts";
 import { resolveRepo, fetchIssueContext, execGh, isDryRun, DryRunResult } from "../gh.ts";
 import { checkAllowedOwners, evaluateRules } from "../conditions.ts";
 import type { Config, IssueContext, ErrorResponse, PermissionCheckResult } from "../types.ts";
-import { outputJson, handleError } from "./utils.ts";
+import { outputJson, handleError, appendMarker, buildEnforceArgs } from "./utils.ts";
 
 function checkPermission(config: Config, context: IssueContext): PermissionCheckResult {
   const ownerBlock = checkAllowedOwners(config, context.repo);
@@ -49,11 +49,15 @@ export function createIssueEditCommand(): Command {
 
         const args = ["issue", "edit", String(issueNumber), "-R", repo];
         if (options.title) args.push("--title", options.title);
-        if (options.body) args.push("--body", options.body);
+        if (options.body) args.push("--body", appendMarker(options.body));
         if (options.addLabel) args.push("--add-label", options.addLabel);
         if (options.removeLabel) args.push("--remove-label", options.removeLabel);
         if (options.addAssignee) args.push("--add-assignee", options.addAssignee);
         if (options.removeAssignee) args.push("--remove-assignee", options.removeAssignee);
+
+        if (result.enforce) {
+          args.push(...buildEnforceArgs(result.enforce, config.selfUserId));
+        }
 
         await execGh(args);
         outputJson({ success: true, issueNumber, message: "Issue edited successfully" });

@@ -21,6 +21,24 @@
       "items": { "$ref": "#/$defs/issueRule" },
       "description": "Rules for issue comment operations."
     },
+    "issueCreate": {
+      "type": "array",
+      "default": [],
+      "items": { "$ref": "#/$defs/issueRule" },
+      "description": "Rules for issue create operations."
+    },
+    "issueSubIssue": {
+      "type": "array",
+      "default": [],
+      "items": { "$ref": "#/$defs/issueRule" },
+      "description": "Rules for issue sub-issue operations (add/remove sub-issues)."
+    },
+    "issueDependency": {
+      "type": "array",
+      "default": [],
+      "items": { "$ref": "#/$defs/issueRule" },
+      "description": "Rules for issue dependency operations (add/remove blocked-by relationships)."
+    },
     "selfUserId": {
       "type": "string",
       "description": "GitHub login name for \"createdBy\": \"self\" / \"assignee\": \"self\" conditions. Get with: gh api user --jq .login"
@@ -72,12 +90,39 @@
       },
       "additionalProperties": false
     },
+    "enforce": {
+      "type": "object",
+      "properties": {
+        "addLabels": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Labels to add when the rule matches."
+        },
+        "removeLabels": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Labels to remove when the rule matches."
+        },
+        "addAssignees": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Assignees to add when the rule matches. Use \"self\" for the configured selfUserId."
+        },
+        "removeAssignees": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Assignees to remove when the rule matches. Use \"self\" for the configured selfUserId."
+        }
+      },
+      "additionalProperties": false
+    },
     "issueRule": {
       "type": "object",
       "required": ["name"],
       "properties": {
         "name": { "type": "string" },
-        "condition": { "$ref": "#/$defs/issueCondition" }
+        "condition": { "$ref": "#/$defs/issueCondition" },
+        "enforce": { "$ref": "#/$defs/enforce" }
       },
       "additionalProperties": false
     }

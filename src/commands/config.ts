@@ -36,7 +36,7 @@ export function createConfigCommand(): Command {
         const template = `{
   "$schema": "https://raw.githubusercontent.com/shoppingjaws/safe-gh/refs/heads/main/config.schema.json",
   // Safe GH - Configuration
-  // issueEdit / issueComment sections define rules for each command.
+  // issueEdit / issueComment / issueCreate / issueSubIssue / issueDependency sections define rules for each command.
   // Rules are evaluated in order; first matching rule applies.
 
   // Global owner restriction: only these orgs/users are allowed
@@ -45,13 +45,41 @@ export function createConfigCommand(): Command {
   "issueEdit": [
     {
       "name": "Edit assigned issues",
-      "condition": { "assignee": "self" }
+      "condition": { "assignee": "self" },
+      "enforce": {
+        "addLabels": ["bot-edited"]
+      }
     }
   ],
 
   "issueComment": [
     {
       "name": "Comment on any issue"
+    }
+  ],
+
+  "issueCreate": [
+    {
+      "name": "Create issues in allowed orgs",
+      "condition": { "owners": ["my-org"] },
+      "enforce": {
+        "addLabels": ["bot-created"],
+        "addAssignees": ["self"]
+      }
+    }
+  ],
+
+  "issueSubIssue": [
+    {
+      "name": "Manage sub-issues in allowed orgs",
+      "condition": { "owners": ["my-org"] }
+    }
+  ],
+
+  "issueDependency": [
+    {
+      "name": "Manage dependencies in allowed orgs",
+      "condition": { "owners": ["my-org"] }
     }
   ],
 

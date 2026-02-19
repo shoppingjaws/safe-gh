@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## プロジェクト概要
 
-safe-gh は AI エージェント向けのセキュリティ重視な GitHub CLI (`gh`) ラッパー。設定ベースのルールで操作権限を制御し、デフォルト拒否のポリシーで動作する。現在は issue edit / issue comment のみ実装済み（PR・Search・Project は未実装）。
+safe-gh は AI エージェント向けのセキュリティ重視な GitHub CLI (`gh`) ラッパー。設定ベースのルールで操作権限を制御し、デフォルト拒否のポリシーで動作する。現在は issue edit / issue comment / issue create / issue sub-issue / issue dependency を実装済み（PR・Search・Project は未実装）。
 
 ## コマンド
 
@@ -22,18 +22,24 @@ bun run typecheck      # 型チェックのみ（emitなし）
 
 **ミドルウェアパターン**: コマンド受付 → リポジトリ解決 → GitHub GraphQL で issue コンテキスト取得 → 設定ファイルのルール評価（先頭一致） → 許可なら `gh` CLI 実行、拒否なら JSON エラー返却。
 
+sub-issue / dependency コマンドは `gh` CLI にネイティブコマンドがないため、`gh api graphql` 経由で GraphQL mutation を直接実行する。クロスリポ参照（`owner/repo#123` 形式）にも対応。
+
 ```
 src/
 ├── index.ts              # CLI エントリポイント (Commander.js)
 ├── types.ts              # Zod スキーマ & 型定義
 ├── config.ts             # ~/.config/safe-gh/config.jsonc の読み込み・キャッシュ
 ├── conditions.ts         # ルール条件評価ロジック (allowedOwners, issue条件)
-├── gh.ts                 # gh CLI 実行, GraphQL, dry-run 制御
+├── gh.ts                 # gh CLI 実行, GraphQL, dry-run 制御, node ID 取得, mutation 実行
 └── commands/
-    ├── config.ts         # config init サブコマンド
-    ├── issue-edit.ts     # issue edit コマンド
-    ├── issue-comment.ts  # issue comment コマンド
-    └── utils.ts          # JSON 出力 & エラーハンドリング
+    ├── config.ts             # config init サブコマンド
+    ├── issue-edit.ts         # issue edit コマンド
+    ├── issue-comment.ts      # issue comment コマンド
+    ├── issue-create.ts       # issue create コマンド
+    ├── issue-sub-issue.ts    # issue sub-issue add/remove コマンド
+    ├── issue-dependency.ts   # issue dependency add/remove コマンド
+    ├── issue-ref.ts          # クロスリポ参照パーサー (parseIssueRef)
+    └── utils.ts              # JSON 出力 & エラーハンドリング
 ```
 
 ## 主要な設計パターン

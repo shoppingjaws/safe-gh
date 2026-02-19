@@ -10,7 +10,10 @@
   "issueEdit": [
     {
       "name": "Edit assigned issues",
-      "condition": { "assignee": "self" }
+      "condition": { "assignee": "self" },
+      "enforce": {
+        "addLabels": ["bot-edited"]
+      }
     },
     {
       "name": "Edit self-created issues",
@@ -21,6 +24,31 @@
   "issueComment": [
     {
       "name": "Comment on any issue"
+    }
+  ],
+
+  "issueCreate": [
+    {
+      "name": "Create issues in allowed orgs",
+      "condition": { "owners": ["my-org"] },
+      "enforce": {
+        "addLabels": ["bot-created"],
+        "addAssignees": ["self"]
+      }
+    }
+  ],
+
+  "issueSubIssue": [
+    {
+      "name": "Manage sub-issues in allowed orgs",
+      "condition": { "owners": ["my-org"] }
+    }
+  ],
+
+  "issueDependency": [
+    {
+      "name": "Manage dependencies in allowed orgs",
+      "condition": { "owners": ["my-org"] }
     }
   ],
 

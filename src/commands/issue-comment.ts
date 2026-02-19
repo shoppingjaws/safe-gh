@@ -3,7 +3,7 @@ import { loadConfig } from "../config.ts";
 import { resolveRepo, fetchIssueContext, execGh, isDryRun, DryRunResult } from "../gh.ts";
 import { checkAllowedOwners, evaluateRules } from "../conditions.ts";
 import type { Config, IssueContext, ErrorResponse, PermissionCheckResult } from "../types.ts";
-import { outputJson, handleError } from "./utils.ts";
+import { outputJson, handleError, appendMarker } from "./utils.ts";
 
 function checkPermission(config: Config, context: IssueContext): PermissionCheckResult {
   const ownerBlock = checkAllowedOwners(config, context.repo);
@@ -42,7 +42,7 @@ export function createIssueCommentCommand(): Command {
           } satisfies ErrorResponse;
         }
 
-        await execGh(["issue", "comment", String(issueNumber), "--body", options.body, "-R", repo]);
+        await execGh(["issue", "comment", String(issueNumber), "--body", appendMarker(options.body), "-R", repo]);
         outputJson({ success: true, issueNumber, message: "Comment added successfully" });
       } catch (error) {
         handleError(error);

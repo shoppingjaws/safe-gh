@@ -1,4 +1,4 @@
-import type { IssueContext, PermissionCheckResult } from "./types.ts";
+import type { ErrorResponse, IssueContext, PermissionCheckResult } from "./types.ts";
 
 // ============================================================
 // Dry-run support
@@ -142,4 +142,97 @@ export async function fetchIssueContext(
     labels: issue.labels.nodes.map((l) => l.name),
     assignees: issue.assignees.nodes.map((a) => a.login),
   };
+}
+
+// ============================================================
+// Issue node ID fetch
+// ============================================================
+
+const ISSUE_NODE_ID_QUERY = `
+query($owner: String!, $repo: String!, $number: Int!) {
+  repository(owner: $owner, name: $repo) {
+    issue(number: $number) { id }
+  }
+}`;
+
+interface GraphQLNodeIdResponse {
+  data: {
+    repository: {
+      issue: { id: string };
+    };
+  };
+  errors?: Array<{ message: string }>;
+}
+
+export async function fetchIssueNodeId(
+  issueNumber: number,
+  repo: string
+): Promise<string> {
+  const [owner, repoName] = repo.split("/");
+  if (!owner || !repoName) {
+    throw new Error(`Invalid repo format: ${repo}. Expected owner/repo`);
+  }
+
+  const result = await execGh([
+    "api",
+    "graphql",
+    "-f",
+    `query=${ISSUE_NODE_ID_QUERY}`,
+    "-F",
+    `owner=${owner}`,
+    "-F",
+    `repo=${repoName}`,
+    "-F",
+    `number=${issueNumber}`,
+  ]);
+
+  const response = JSON.parse(result) as GraphQLNodeIdResponse;
+
+  if (response.errors && response.errors.length > 0) {
+    throw {
+      error: response.errors.map((e) => e.message).join("; "),
+      code: "GRAPHQL_ERROR",
+    } satisfies ErrorResponse;
+  }
+
+  return response.data.repository.issue.id;
+}
+
+// ============================================================
+// GraphQL mutation execution
+// ============================================================
+
+interface GraphQLMutationResponse {
+  data?: Record<string, unknown>;
+  errors?: Array<{ message: string }>;
+}
+
+export async function execGraphQLMutation(
+  query: string,
+  variables: Record<string, string>,
+  headers?: Record<string, string>
+): Promise<string> {
+  const args = ["api", "graphql", "-f", `query=${query}`];
+
+  for (const [key, value] of Object.entries(variables)) {
+    args.push("-F", `${key}=${value}`);
+  }
+
+  if (headers) {
+    for (const [key, value] of Object.entries(headers)) {
+      args.push("-H", `${key}: ${value}`);
+    }
+  }
+
+  const result = await execGh(args);
+  const response = JSON.parse(result) as GraphQLMutationResponse;
+
+  if (response.errors && response.errors.length > 0) {
+    throw {
+      error: response.errors.map((e) => e.message).join("; "),
+      code: "GRAPHQL_ERROR",
+    } satisfies ErrorResponse;
+  }
+
+  return result;
 }
