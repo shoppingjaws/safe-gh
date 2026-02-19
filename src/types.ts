@@ -147,6 +147,7 @@ export type ProjectRule = z.infer<typeof ProjectRuleSchema>;
 // ============================================================
 
 export const ConfigSchema = z.object({
+  allowedOwners: z.array(z.string()).optional(),
   issueRules: z.array(IssueRuleSchema).default([]),
   prRules: z.array(PrRuleSchema).default([]),
   searchRules: z.array(SearchRuleSchema).default([]),

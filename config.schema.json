@@ -4,6 +4,11 @@
   "description": "Configuration file for safe-gh. Rules are evaluated in order; first matching rule applies.",
   "type": "object",
   "properties": {
+    "allowedOwners": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Global restriction: only allow operations on repos/projects owned by these users/organizations."
+    },
     "issueRules": {
       "type": "array",
       "default": [],

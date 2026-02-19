@@ -91,6 +91,9 @@ export function initConfig(): string {
   // has its own set of operations and conditions.
   // Rules are evaluated in order; first matching rule applies.
 
+  // Global owner restriction: only these orgs/users are allowed
+  "allowedOwners": ["my-org"],
+
   "issueRules": [
     {
       "name": "Read only",

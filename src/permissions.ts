@@ -146,6 +146,50 @@ function matchBranchPattern(branch: string, pattern: string): boolean {
 }
 
 // ============================================================
+// Global allowedOwners check
+// ============================================================
+
+function checkAllowedOwners(
+  config: Config,
+  resource: ResourceType,
+  context: OperationContext
+): PermissionCheckResult | null {
+  if (!config.allowedOwners || config.allowedOwners.length === 0) return null;
+
+  let owner: string | undefined;
+
+  if (resource === "project") {
+    if (!context.projectOwner) return null;
+    owner = context.projectOwner;
+  } else if (resource === "search") {
+    // search without -R is cross-repo; skip owner check
+    if (!context.repo) return null;
+    owner = context.repo.split("/")[0];
+  } else {
+    // issue / pr: require -R when allowedOwners is configured
+    if (!context.repo) {
+      return {
+        allowed: false,
+        reason:
+          "Repository must be specified with -R owner/repo when allowedOwners is configured",
+      };
+    }
+    owner = context.repo.split("/")[0];
+  }
+
+  if (!owner) return null;
+
+  if (!config.allowedOwners.includes(owner)) {
+    return {
+      allowed: false,
+      reason: `Blocked by global allowedOwners: owner '${owner}' is not in [${config.allowedOwners.join(", ")}]`,
+    };
+  }
+
+  return null;
+}
+
+// ============================================================
 // Main permission check
 // ============================================================
 
@@ -179,6 +223,10 @@ export function checkPermission(
   operation: string,
   context: OperationContext
 ): PermissionCheckResult {
+  // Global allowedOwners check (before rule evaluation)
+  const ownerBlock = checkAllowedOwners(config, resource, context);
+  if (ownerBlock) return ownerBlock;
+
   const rules = getRulesForResource(config, resource);
 
   for (const rule of rules) {

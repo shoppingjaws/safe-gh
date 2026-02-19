@@ -19,10 +19,8 @@ import type {
 // Dry-run support
 // ============================================================
 
-let dryRunMode = false;
-
 export function setDryRun(enabled: boolean): void {
-  dryRunMode = enabled;
+  process.env.SAFE_GH_DRY_RUN = enabled ? "1" : "";
 }
 
 export class DryRunResult {
@@ -127,7 +125,7 @@ function ensurePermission(
     context
   );
 
-  if (dryRunMode) {
+  if (process.env.SAFE_GH_DRY_RUN === "1") {
     throw new DryRunResult(resource, operation, context, result);
   }
 
