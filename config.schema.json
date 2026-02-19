@@ -7,27 +7,19 @@
     "allowedOwners": {
       "type": "array",
       "items": { "type": "string" },
-      "description": "Global restriction: only allow operations on repos/projects owned by these users/organizations."
+      "description": "Global restriction: only allow operations on repos owned by these users/organizations."
     },
-    "issueRules": {
+    "issueEdit": {
       "type": "array",
       "default": [],
-      "items": { "$ref": "#/$defs/issueRule" }
+      "items": { "$ref": "#/$defs/issueRule" },
+      "description": "Rules for issue edit operations."
     },
-    "prRules": {
+    "issueComment": {
       "type": "array",
       "default": [],
-      "items": { "$ref": "#/$defs/prRule" }
-    },
-    "searchRules": {
-      "type": "array",
-      "default": [],
-      "items": { "$ref": "#/$defs/searchRule" }
-    },
-    "projectRules": {
-      "type": "array",
-      "default": [],
-      "items": { "$ref": "#/$defs/projectRule" }
+      "items": { "$ref": "#/$defs/issueRule" },
+      "description": "Rules for issue comment operations."
     },
     "selfUserId": {
       "type": "string",
@@ -35,9 +27,9 @@
     },
     "defaultPermission": {
       "type": "string",
-      "enum": ["deny", "read"],
+      "const": "deny",
       "default": "deny",
-      "description": "Default behavior when no rule matches."
+      "description": "Default behavior when no rule matches. Only \"deny\" is supported."
     }
   },
   "additionalProperties": false,
@@ -56,7 +48,7 @@
       },
       "additionalProperties": false
     },
-    "commonCondition": {
+    "issueCondition": {
       "type": "object",
       "properties": {
         "createdBy": {
@@ -76,140 +68,16 @@
           "type": "array",
           "items": { "type": "string" },
           "description": "Restrict to repositories owned by these users/organizations."
-        }
-      },
-      "additionalProperties": false
-    },
-    "issueCondition": { "$ref": "#/$defs/commonCondition" },
-    "prCondition": {
-      "type": "object",
-      "properties": {
-        "createdBy": {
-          "type": "string",
-          "const": "self"
-        },
-        "assignee": {
-          "type": "string",
-          "const": "self"
-        },
-        "labels": { "$ref": "#/$defs/labelCondition" },
-        "repos": {
-          "type": "array",
-          "items": { "type": "string" }
-        },
-        "owners": {
-          "type": "array",
-          "items": { "type": "string" },
-          "description": "Restrict to repositories owned by these users/organizations."
-        },
-        "draft": {
-          "type": "boolean"
-        },
-        "baseBranch": {
-          "type": "array",
-          "items": { "type": "string" }
-        },
-        "headBranch": {
-          "type": "array",
-          "items": { "type": "string" }
-        },
-        "reviewDecision": {
-          "type": "string",
-          "enum": ["APPROVED", "CHANGES_REQUESTED", "REVIEW_REQUIRED"]
-        }
-      },
-      "additionalProperties": false
-    },
-    "searchCondition": {
-      "type": "object",
-      "properties": {
-        "repos": {
-          "type": "array",
-          "items": { "type": "string" }
-        },
-        "owners": {
-          "type": "array",
-          "items": { "type": "string" },
-          "description": "Restrict to repositories owned by these users/organizations."
-        }
-      },
-      "additionalProperties": false
-    },
-    "projectCondition": {
-      "type": "object",
-      "properties": {
-        "owner": {
-          "type": "array",
-          "items": { "type": "string" }
-        },
-        "projectNumbers": {
-          "type": "array",
-          "items": { "type": "number" }
         }
       },
       "additionalProperties": false
     },
     "issueRule": {
       "type": "object",
-      "required": ["name", "operations"],
+      "required": ["name"],
       "properties": {
         "name": { "type": "string" },
-        "operations": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "enum": ["list", "view", "list:comments", "create", "update", "close", "reopen", "delete", "comment", "comment:edit", "comment:delete"]
-          }
-        },
         "condition": { "$ref": "#/$defs/issueCondition" }
-      },
-      "additionalProperties": false
-    },
-    "prRule": {
-      "type": "object",
-      "required": ["name", "operations"],
-      "properties": {
-        "name": { "type": "string" },
-        "operations": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "enum": ["list", "view", "diff", "checks", "list:comments", "create", "update", "close", "reopen", "merge", "review", "update-branch", "comment", "comment:edit", "comment:delete"]
-          }
-        },
-        "condition": { "$ref": "#/$defs/prCondition" }
-      },
-      "additionalProperties": false
-    },
-    "searchRule": {
-      "type": "object",
-      "required": ["name", "operations"],
-      "properties": {
-        "name": { "type": "string" },
-        "operations": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "enum": ["code", "issues", "prs", "repos", "commits"]
-          }
-        },
-        "condition": { "$ref": "#/$defs/searchCondition" }
-      },
-      "additionalProperties": false
-    },
-    "projectRule": {
-      "type": "object",
-      "required": ["name", "operations"],
-      "properties": {
-        "name": { "type": "string" },
-        "operations": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "enum": ["list", "view", "field:list", "item:list", "create", "edit", "close", "delete", "item:add", "item:create", "item:edit", "item:delete", "item:archive", "field:create", "field:delete"]
-          }
-        },
-        "condition": { "$ref": "#/$defs/projectCondition" }
       },
       "additionalProperties": false
     }

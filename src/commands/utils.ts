@@ -1,5 +1,5 @@
 import type { ErrorResponse } from "../types.ts";
-import { DryRunResult } from "../gh-client.ts";
+import { DryRunResult, isGhCliError } from "../gh.ts";
 
 export function outputJson(data: unknown): void {
   console.log(JSON.stringify(data, null, 2));
@@ -9,8 +9,7 @@ export function handleError(error: unknown): never {
   if (error instanceof DryRunResult) {
     outputJson({
       dryRun: true,
-      resource: error.resource,
-      operation: error.operation,
+      command: error.command,
       context: error.context,
       allowed: error.result.allowed,
       ruleName: error.result.ruleName,
@@ -33,7 +32,6 @@ export function handleError(error: unknown): never {
     process.exit(1);
   }
 
-  // gh CLI errors
   if (isGhCliError(error)) {
     const response: ErrorResponse = {
       error: error.stderr || "gh CLI error",
@@ -57,18 +55,6 @@ function isErrorResponse(error: unknown): error is ErrorResponse {
     typeof error === "object" &&
     error !== null &&
     "error" in error &&
-    "code" in error
-  );
-}
-
-function isGhCliError(
-  error: unknown
-): error is { stderr: string; exitCode: number; code: string } {
-  return (
-    typeof error === "object" &&
-    error !== null &&
-    "stderr" in error &&
-    "exitCode" in error &&
     "code" in error
   );
 }
