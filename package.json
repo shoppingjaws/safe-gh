@@ -42,11 +42,13 @@
     "build": "bun build src/index.ts --outdir dist --target node --format esm --packages external && bun run build:types",
     "build:types": "tsc -p tsconfig.build.json",
     "prepublishOnly": "bun run build",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test:docker": "docker build -t safe-gh-test -f Dockerfile.test . && docker run --rm safe-gh-test"
   },
   "devDependencies": {
     "@types/bun": "latest",
     "@types/node": "^22.0.0",
+    "fast-check": "^4.5.3",
     "typescript": "^5.8.0"
   },
   "dependencies": {
