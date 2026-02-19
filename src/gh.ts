@@ -94,6 +94,7 @@ query($owner: String!, $repo: String!, $number: Int!) {
       author { login }
       labels(first: 50) { nodes { name } }
       assignees(first: 20) { nodes { login } }
+      parent { number }
     }
   }
 }`;
@@ -105,6 +106,7 @@ interface GraphQLIssueResponse {
         author: { login: string };
         labels: { nodes: Array<{ name: string }> };
         assignees: { nodes: Array<{ login: string }> };
+        parent: { number: number } | null;
       };
     };
   };
@@ -122,6 +124,8 @@ export async function fetchIssueContext(
   const result = await execGh([
     "api",
     "graphql",
+    "-H",
+    "GraphQL-Features: sub_issues",
     "-f",
     `query=${ISSUE_CONTEXT_QUERY}`,
     "-F",
@@ -141,6 +145,7 @@ export async function fetchIssueContext(
     issueAuthor: issue.author.login,
     labels: issue.labels.nodes.map((l) => l.name),
     assignees: issue.assignees.nodes.map((a) => a.login),
+    parentIssueNumber: issue.parent?.number ?? null,
   };
 }
 

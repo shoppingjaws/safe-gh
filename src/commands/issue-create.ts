@@ -30,6 +30,7 @@ export function createIssueCreateCommand(): Command {
           issueAuthor: "",
           labels: [],
           assignees: [],
+          parentIssueNumber: null,
         };
 
         const config = loadConfig();

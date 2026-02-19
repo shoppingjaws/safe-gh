@@ -86,6 +86,10 @@
           "type": "array",
           "items": { "type": "string" },
           "description": "Restrict to repositories owned by these users/organizations."
+        },
+        "parentIssue": {
+          "type": "integer",
+          "description": "Match only issues that are sub-issues of this parent issue number."
         }
       },
       "additionalProperties": false

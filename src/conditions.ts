@@ -79,6 +79,11 @@ export function checkIssueCondition(
     if (!owner || !condition.owners.includes(owner)) return false;
   }
 
+  // parentIssue
+  if (condition.parentIssue !== undefined) {
+    if (context.parentIssueNumber !== condition.parentIssue) return false;
+  }
+
   return true;
 }
 

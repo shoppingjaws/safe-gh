@@ -16,6 +16,7 @@ export const IssueConditionSchema = z.object({
   labels: LabelConditionSchema.optional(),
   repos: z.array(z.string()).optional(),
   owners: z.array(z.string()).optional(),
+  parentIssue: z.number().optional(),
 });
 export type IssueCondition = z.infer<typeof IssueConditionSchema>;
 
@@ -68,6 +69,7 @@ export interface IssueContext {
   issueAuthor: string;
   labels: string[];
   assignees: string[];
+  parentIssueNumber: number | null;
 }
 
 // ============================================================
