@@ -110,6 +110,7 @@ export type ErrorCode =
   | "UNSUPPORTED_COMMAND"
   | "ENFORCE_ERROR"
   | "GRAPHQL_ERROR"
+  | "ISSUE_NOT_FOUND"
   | "UNKNOWN_ERROR";
 
 export interface ErrorResponse {

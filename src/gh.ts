@@ -110,7 +110,7 @@ interface GraphQLIssueResponse {
     repository: {
       issue: {
         title: string;
-        author: { login: string };
+        author: { login: string } | null;
         labels: { nodes: Array<{ name: string }> };
         assignees: { nodes: Array<{ login: string }> };
         parent: {
@@ -119,9 +119,10 @@ interface GraphQLIssueResponse {
           assignees: { nodes: Array<{ login: string }> };
           labels: { nodes: Array<{ name: string }> };
         } | null;
-      };
+      } | null;
     };
   };
+  errors?: Array<{ message: string }>;
 }
 
 export async function fetchIssueContext(
@@ -149,13 +150,28 @@ export async function fetchIssueContext(
   ]);
 
   const response = JSON.parse(result) as GraphQLIssueResponse;
+
+  if (response.errors && response.errors.length > 0) {
+    throw {
+      error: response.errors.map((e) => e.message).join("; "),
+      code: "GRAPHQL_ERROR",
+    } satisfies ErrorResponse;
+  }
+
   const issue = response.data.repository.issue;
+
+  if (!issue) {
+    throw {
+      error: `Issue #${issueNumber} not found in ${repo}`,
+      code: "ISSUE_NOT_FOUND",
+    } satisfies ErrorResponse;
+  }
 
   return {
     repo,
     issueNumber,
     issueTitle: issue.title,
-    issueAuthor: issue.author.login,
+    issueAuthor: issue.author?.login ?? "",
     labels: issue.labels.nodes.map((l) => l.name),
     assignees: issue.assignees.nodes.map((a) => a.login),
     parentIssueNumber: issue.parent?.number ?? null,
