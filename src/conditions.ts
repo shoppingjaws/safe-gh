@@ -79,9 +79,37 @@ export function checkIssueCondition(
     if (!owner || !condition.owners.includes(owner)) return false;
   }
 
+  // titlePrefix
+  if (condition.titlePrefix !== undefined) {
+    if (!context.issueTitle.startsWith(condition.titlePrefix)) return false;
+  }
+
   // parentIssue
   if (condition.parentIssue !== undefined) {
-    if (context.parentIssueNumber !== condition.parentIssue) return false;
+    if (condition.parentIssue.number !== undefined) {
+      if (context.parentIssueNumber !== condition.parentIssue.number) return false;
+    }
+    if (condition.parentIssue.assignee === "self") {
+      if (!selfUserId) return false;
+      if (!context.parentIssueAssignees.includes(selfUserId)) return false;
+    }
+    if (condition.parentIssue.labels) {
+      if (condition.parentIssue.labels.include && condition.parentIssue.labels.include.length > 0) {
+        if (!condition.parentIssue.labels.include.some((l) => context.parentIssueLabels.includes(l))) {
+          return false;
+        }
+      }
+      if (condition.parentIssue.labels.exclude && condition.parentIssue.labels.exclude.length > 0) {
+        if (condition.parentIssue.labels.exclude.some((l) => context.parentIssueLabels.includes(l))) {
+          return false;
+        }
+      }
+    }
+    if (condition.parentIssue.titlePrefix !== undefined) {
+      if (!context.parentIssueTitle || !context.parentIssueTitle.startsWith(condition.parentIssue.titlePrefix)) {
+        return false;
+      }
+    }
   }
 
   return true;

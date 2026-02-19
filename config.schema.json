@@ -87,9 +87,30 @@
           "items": { "type": "string" },
           "description": "Restrict to repositories owned by these users/organizations."
         },
+        "titlePrefix": {
+          "type": "string",
+          "description": "Match only issues whose title starts with this prefix."
+        },
         "parentIssue": {
-          "type": "integer",
-          "description": "Match only issues that are sub-issues of this parent issue number."
+          "type": "object",
+          "description": "Conditions for the parent issue. Match only issues whose parent issue satisfies these conditions.",
+          "properties": {
+            "number": {
+              "type": "integer",
+              "description": "Match only issues that are sub-issues of this parent issue number."
+            },
+            "assignee": {
+              "type": "string",
+              "const": "self",
+              "description": "Match only issues whose parent issue is assigned to self."
+            },
+            "labels": { "$ref": "#/$defs/labelCondition" },
+            "titlePrefix": {
+              "type": "string",
+              "description": "Match only issues whose parent issue title starts with this prefix."
+            }
+          },
+          "additionalProperties": false
         }
       },
       "additionalProperties": false
@@ -116,6 +137,10 @@
           "type": "array",
           "items": { "type": "string" },
           "description": "Assignees to remove when the rule matches. Use \"self\" for the configured selfUserId."
+        },
+        "titlePrefix": {
+          "type": "string",
+          "description": "Prefix to prepend to the issue title on create. Skipped if the title already starts with this prefix."
         }
       },
       "additionalProperties": false

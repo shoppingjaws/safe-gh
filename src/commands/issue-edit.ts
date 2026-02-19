@@ -48,7 +48,13 @@ export function createIssueEditCommand(): Command {
         }
 
         const args = ["issue", "edit", String(issueNumber), "-R", repo];
-        if (options.title) args.push("--title", options.title);
+        if (options.title) {
+          let title: string = options.title;
+          if (result.enforce?.titlePrefix && !title.startsWith(result.enforce.titlePrefix)) {
+            title = `${result.enforce.titlePrefix}${title}`;
+          }
+          args.push("--title", title);
+        }
         if (options.body) args.push("--body", appendMarker(options.body));
         if (options.addLabel) args.push("--add-label", options.addLabel);
         if (options.removeLabel) args.push("--remove-label", options.removeLabel);

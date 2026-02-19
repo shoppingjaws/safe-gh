@@ -10,13 +10,22 @@ export const LabelConditionSchema = z.object({
 });
 export type LabelCondition = z.infer<typeof LabelConditionSchema>;
 
+export const ParentIssueConditionSchema = z.object({
+  number: z.number().optional(),
+  assignee: z.literal("self").optional(),
+  labels: LabelConditionSchema.optional(),
+  titlePrefix: z.string().optional(),
+});
+export type ParentIssueCondition = z.infer<typeof ParentIssueConditionSchema>;
+
 export const IssueConditionSchema = z.object({
   createdBy: z.literal("self").optional(),
   assignee: z.literal("self").optional(),
   labels: LabelConditionSchema.optional(),
   repos: z.array(z.string()).optional(),
   owners: z.array(z.string()).optional(),
-  parentIssue: z.number().optional(),
+  titlePrefix: z.string().optional(),
+  parentIssue: ParentIssueConditionSchema.optional(),
 });
 export type IssueCondition = z.infer<typeof IssueConditionSchema>;
 
@@ -29,6 +38,7 @@ export const EnforceSchema = z.object({
   removeLabels: z.array(z.string()).optional(),
   addAssignees: z.array(z.string()).optional(),
   removeAssignees: z.array(z.string()).optional(),
+  titlePrefix: z.string().optional(),
 });
 export type Enforce = z.infer<typeof EnforceSchema>;
 
@@ -66,10 +76,14 @@ export type Config = z.infer<typeof ConfigSchema>;
 export interface IssueContext {
   repo: string;
   issueNumber: number;
+  issueTitle: string;
   issueAuthor: string;
   labels: string[];
   assignees: string[];
   parentIssueNumber: number | null;
+  parentIssueAssignees: string[];
+  parentIssueLabels: string[];
+  parentIssueTitle: string | null;
 }
 
 // ============================================================

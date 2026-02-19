@@ -27,10 +27,14 @@ export function createIssueCreateCommand(): Command {
         const context: IssueContext = {
           repo,
           issueNumber: 0,
+          issueTitle: options.title,
           issueAuthor: "",
           labels: [],
           assignees: [],
           parentIssueNumber: null,
+          parentIssueAssignees: [],
+          parentIssueLabels: [],
+          parentIssueTitle: null,
         };
 
         const config = loadConfig();
@@ -48,7 +52,12 @@ export function createIssueCreateCommand(): Command {
           } satisfies ErrorResponse;
         }
 
-        const args = ["issue", "create", "--title", options.title, "--body", appendMarker(options.body), "-R", repo];
+        let title: string = options.title;
+        if (result.enforce?.titlePrefix && !title.startsWith(result.enforce.titlePrefix)) {
+          title = `${result.enforce.titlePrefix}${title}`;
+        }
+
+        const args = ["issue", "create", "--title", title, "--body", appendMarker(options.body), "-R", repo];
         if (options.label) args.push("--label", options.label);
         if (options.assignee) args.push("--assignee", options.assignee);
 

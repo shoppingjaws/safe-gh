@@ -91,10 +91,16 @@ const ISSUE_CONTEXT_QUERY = `
 query($owner: String!, $repo: String!, $number: Int!) {
   repository(owner: $owner, name: $repo) {
     issue(number: $number) {
+      title
       author { login }
       labels(first: 50) { nodes { name } }
       assignees(first: 20) { nodes { login } }
-      parent { number }
+      parent {
+        number
+        title
+        assignees(first: 20) { nodes { login } }
+        labels(first: 50) { nodes { name } }
+      }
     }
   }
 }`;
@@ -103,10 +109,16 @@ interface GraphQLIssueResponse {
   data: {
     repository: {
       issue: {
+        title: string;
         author: { login: string };
         labels: { nodes: Array<{ name: string }> };
         assignees: { nodes: Array<{ login: string }> };
-        parent: { number: number } | null;
+        parent: {
+          number: number;
+          title: string;
+          assignees: { nodes: Array<{ login: string }> };
+          labels: { nodes: Array<{ name: string }> };
+        } | null;
       };
     };
   };
@@ -142,10 +154,14 @@ export async function fetchIssueContext(
   return {
     repo,
     issueNumber,
+    issueTitle: issue.title,
     issueAuthor: issue.author.login,
     labels: issue.labels.nodes.map((l) => l.name),
     assignees: issue.assignees.nodes.map((a) => a.login),
     parentIssueNumber: issue.parent?.number ?? null,
+    parentIssueAssignees: issue.parent?.assignees.nodes.map((a) => a.login) ?? [],
+    parentIssueLabels: issue.parent?.labels.nodes.map((l) => l.name) ?? [],
+    parentIssueTitle: issue.parent?.title ?? null,
   };
 }
 
