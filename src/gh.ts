@@ -195,7 +195,7 @@ query($owner: String!, $repo: String!, $number: Int!) {
 interface GraphQLNodeIdResponse {
   data: {
     repository: {
-      issue: { id: string };
+      issue: { id: string } | null;
     };
   };
   errors?: Array<{ message: string }>;
@@ -232,7 +232,16 @@ export async function fetchIssueNodeId(
     } satisfies ErrorResponse;
   }
 
-  return response.data.repository.issue.id;
+  const issue = response.data.repository.issue;
+
+  if (!issue) {
+    throw {
+      error: `Issue #${issueNumber} not found in ${repo}`,
+      code: "ISSUE_NOT_FOUND",
+    } satisfies ErrorResponse;
+  }
+
+  return issue.id;
 }
 
 // ============================================================

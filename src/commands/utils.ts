@@ -72,20 +72,20 @@ export function handleError(error: unknown): never {
     process.exit(1);
   }
 
-  if (error instanceof Error) {
-    const response: ErrorResponse = {
-      error: error.message,
-      code: "UNKNOWN_ERROR",
-    };
-    outputJson(response);
-    process.exit(1);
-  }
-
   if (isGhCliError(error)) {
     const response: ErrorResponse = {
       error: error.stderr || "gh CLI error",
       code: "GH_CLI_ERROR",
       details: { exitCode: error.exitCode },
+    };
+    outputJson(response);
+    process.exit(1);
+  }
+
+  if (error instanceof Error) {
+    const response: ErrorResponse = {
+      error: error.message,
+      code: "UNKNOWN_ERROR",
     };
     outputJson(response);
     process.exit(1);

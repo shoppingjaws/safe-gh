@@ -23,21 +23,23 @@ export function createIssueCreateCommand(): Command {
     .action(async (options) => {
       try {
         const repo = await resolveRepo(options.repo);
+        const config = loadConfig();
+
+        const requestedLabels = options.label ? options.label.split(",").map((l: string) => l.trim()) : [];
+        const requestedAssignees = options.assignee ? options.assignee.split(",").map((a: string) => a.trim()) : [];
 
         const context: IssueContext = {
           repo,
           issueNumber: 0,
           issueTitle: options.title,
-          issueAuthor: "",
-          labels: [],
-          assignees: [],
+          issueAuthor: config.selfUserId ?? "",
+          labels: requestedLabels,
+          assignees: requestedAssignees,
           parentIssueNumber: null,
           parentIssueAssignees: [],
           parentIssueLabels: [],
           parentIssueTitle: null,
         };
-
-        const config = loadConfig();
         const result = checkPermission(config, context);
 
         if (isDryRun()) {
