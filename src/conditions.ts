@@ -98,7 +98,7 @@ export function checkIssueCondition(
       if (!context.parentIssueAssignees.includes(selfUserId)) return false;
     }
     if (condition.parentIssue.labels) {
-      if (condition.parentIssue.labels.include && condition.parentIssue.labels.include.length > 0) {
+      if (condition.parentIssue.labels.include) {
         if (!condition.parentIssue.labels.include.some((l) => context.parentIssueLabels.includes(l))) {
           return false;
         }

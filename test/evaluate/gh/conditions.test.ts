@@ -62,4 +62,22 @@ describe("checkIssueCondition: 空配列・空オブジェクトの扱い", () =
     );
     expect(matched).toBe(true);
   });
+
+  test("parentIssue.labels.include: [] もトップレベルと同様にマッチしない", () => {
+    // トップレベルの labels.include: [] は false を返す（some() が false）
+    // parentIssue.labels.include: [] も同様に false を返すべき
+    const context = makeContext({
+      parentIssueNumber: 10,
+      parentIssueAssignees: [],
+      parentIssueLabels: ["epic"],
+      parentIssueTitle: "Parent",
+    });
+    const matched = checkIssueCondition(
+      { parentIssue: { labels: { include: [] } } },
+      context,
+      "bot-user"
+    );
+    expect(matched).toBe(false);
+  });
 });
+

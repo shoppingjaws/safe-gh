@@ -144,6 +144,25 @@ describe("issue edit", () => {
     expect(args).not.toContain("--title");
   });
 
+  test("enforce titlePrefix: title 未指定で既存タイトルにプレフィックスがない場合、--title が付与される", () => {
+    // issue-edit.ts の実コマンドハンドラは options.title がないと
+    // enforce titlePrefix を無視するバグがある (issue-edit.ts:51-56)
+    // evaluate.ts は context.issueTitle にフォールバックして正しく処理する
+    const config = makeConfig({
+      issueEdit: [{ name: "with-prefix", enforce: { titlePrefix: "[BOT] " } }],
+    });
+    const result = evaluateCommand(config, {
+      command: "issue edit",
+      context: makeContext({ issueTitle: "plain title" }),
+      options: { body: "body only" },
+    });
+    expect(result.permission.allowed).toBe(true);
+    const args = (result.execution as { type: "gh-cli"; args: string[] }).args;
+    const titleIdx = args.indexOf("--title");
+    expect(titleIdx).not.toBe(-1);
+    expect(args[titleIdx + 1]).toBe("[BOT] plain title");
+  });
+
   test("条件マッチしないルールはスキップされる", () => {
     const config = makeConfig({
       issueEdit: [
