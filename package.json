@@ -41,7 +41,8 @@
   "scripts": {
     "build": "bun build src/index.ts --outdir dist --target node --format esm --packages external && bun run build:types",
     "build:types": "tsc -p tsconfig.build.json",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "docker build -f Dockerfile.test -t safe-gh-test . && docker run --rm safe-gh-test"
   },
   "devDependencies": {
     "@types/bun": "latest",
