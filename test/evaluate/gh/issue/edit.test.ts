@@ -115,6 +115,35 @@ describe("issue edit", () => {
     expect(args).toContain("--remove-assignee");
   });
 
+  test("enforce titlePrefix: title 未指定時に既存タイトルへ適用される", () => {
+    const config = makeConfig({
+      issueEdit: [{ name: "with-prefix", enforce: { titlePrefix: "[WIP] " } }],
+    });
+    const result = evaluateCommand(config, {
+      command: "issue edit",
+      context: makeContext({ issueTitle: "my feature" }),
+      options: { body: "updated body" },
+    });
+    expect(result.permission.allowed).toBe(true);
+    const args = (result.execution as { type: "gh-cli"; args: string[] }).args;
+    const titleIdx = args.indexOf("--title");
+    expect(args[titleIdx + 1]).toBe("[WIP] my feature");
+  });
+
+  test("enforce titlePrefix: title 未指定で既にプレフィックス付きなら --title を追加しない", () => {
+    const config = makeConfig({
+      issueEdit: [{ name: "with-prefix", enforce: { titlePrefix: "[WIP] " } }],
+    });
+    const result = evaluateCommand(config, {
+      command: "issue edit",
+      context: makeContext({ issueTitle: "[WIP] my feature" }),
+      options: { body: "updated body" },
+    });
+    expect(result.permission.allowed).toBe(true);
+    const args = (result.execution as { type: "gh-cli"; args: string[] }).args;
+    expect(args).not.toContain("--title");
+  });
+
   test("条件マッチしないルールはスキップされる", () => {
     const config = makeConfig({
       issueEdit: [

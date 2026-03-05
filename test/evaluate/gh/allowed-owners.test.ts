@@ -31,6 +31,20 @@ describe("allowedOwners", () => {
     }
   });
 
+  test("allowedOwners: [] は全オーナーを拒否", () => {
+    const config = makeConfig({
+      allowedOwners: [],
+      issueEdit: [{ name: "allow-all" }],
+    });
+    const result = evaluateCommand(config, {
+      command: "issue edit",
+      context: makeContext(),
+      options: { title: "t" },
+    });
+    expect(result.permission.allowed).toBe(false);
+    expect(result.permission.reason).toContain("allowedOwners");
+  });
+
   test("allowedOwners 未設定なら owner チェックをスキップ", () => {
     const config = makeConfig({
       allowedOwners: undefined,
