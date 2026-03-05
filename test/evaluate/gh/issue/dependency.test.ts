@@ -1,5 +1,5 @@
 import { describe, test, expect } from "bun:test";
-import { evaluateCommand } from "../../../../src/evaluate.ts";
+import { evaluateCommand } from "../../evaluate.ts";
 import { makeConfig, makeContext } from "../../helpers.ts";
 
 describe("issue dependency", () => {

@@ -16,7 +16,7 @@ const program = new Command();
 program
   .name("safe-gh")
   .description("A safe GitHub CLI wrapper for AI agents")
-  .version("0.1.0")
+  .version("0.2.0")
   .option("--dry-run", "Check permissions without executing");
 
 program.hook("preAction", (thisCommand) => {

@@ -1,11 +1,11 @@
-import { checkAllowedOwners, evaluateRules } from "./conditions.ts";
-import { buildEnforceArgs, appendMarker } from "./commands/utils.ts";
+import { checkAllowedOwners, evaluateRules } from "../../src/conditions.ts";
+import { buildEnforceArgs, appendMarker } from "../../src/commands/utils.ts";
 import type {
   Config,
   IssueContext,
   IssueRuleWithEnforce,
   PermissionCheckResult,
-} from "./types.ts";
+} from "../../src/types.ts";
 
 // ============================================================
 // Input types (discriminated union)
