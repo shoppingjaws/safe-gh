@@ -18,7 +18,7 @@
     "issueComment": {
       "type": "array",
       "default": [],
-      "items": { "$ref": "#/$defs/issueRule" },
+      "items": { "$ref": "#/$defs/issueRuleBase" },
       "description": "Rules for issue comment operations."
     },
     "issueCreate": {
@@ -30,13 +30,13 @@
     "issueSubIssue": {
       "type": "array",
       "default": [],
-      "items": { "$ref": "#/$defs/issueRule" },
+      "items": { "$ref": "#/$defs/issueRuleBase" },
       "description": "Rules for issue sub-issue operations (add/remove sub-issues)."
     },
     "issueDependency": {
       "type": "array",
       "default": [],
-      "items": { "$ref": "#/$defs/issueRule" },
+      "items": { "$ref": "#/$defs/issueRuleBase" },
       "description": "Rules for issue dependency operations (add/remove blocked-by relationships)."
     },
     "selfUserId": {
@@ -142,6 +142,15 @@
           "type": "string",
           "description": "Prefix to prepend to the issue title on create. Skipped if the title already starts with this prefix."
         }
+      },
+      "additionalProperties": false
+    },
+    "issueRuleBase": {
+      "type": "object",
+      "required": ["name"],
+      "properties": {
+        "name": { "type": "string" },
+        "condition": { "$ref": "#/$defs/issueCondition" }
       },
       "additionalProperties": false
     },

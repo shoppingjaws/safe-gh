@@ -2,7 +2,7 @@ import type {
   Config,
   IssueCondition,
   IssueContext,
-  IssueRule,
+  IssueRuleWithEnforce,
   PermissionCheckResult,
 } from "./types.ts";
 
@@ -120,7 +120,7 @@ export function checkIssueCondition(
 // ============================================================
 
 export function evaluateRules(
-  rules: IssueRule[],
+  rules: IssueRuleWithEnforce[],
   context: IssueContext,
   selfUserId: string | undefined
 ): PermissionCheckResult {

@@ -46,12 +46,16 @@ export type Enforce = z.infer<typeof EnforceSchema>;
 // Rule schemas
 // ============================================================
 
-export const IssueRuleSchema = z.object({
+export const IssueRuleBaseSchema = z.object({
   name: z.string(),
   condition: IssueConditionSchema.optional(),
+});
+export type IssueRuleBase = z.infer<typeof IssueRuleBaseSchema>;
+
+export const IssueRuleWithEnforceSchema = IssueRuleBaseSchema.extend({
   enforce: EnforceSchema.optional(),
 });
-export type IssueRule = z.infer<typeof IssueRuleSchema>;
+export type IssueRuleWithEnforce = z.infer<typeof IssueRuleWithEnforceSchema>;
 
 // ============================================================
 // Config schema
@@ -59,11 +63,11 @@ export type IssueRule = z.infer<typeof IssueRuleSchema>;
 
 export const ConfigSchema = z.object({
   allowedOwners: z.array(z.string()).optional(),
-  issueEdit: z.array(IssueRuleSchema).default([]),
-  issueComment: z.array(IssueRuleSchema).default([]),
-  issueCreate: z.array(IssueRuleSchema).default([]),
-  issueSubIssue: z.array(IssueRuleSchema).default([]),
-  issueDependency: z.array(IssueRuleSchema).default([]),
+  issueEdit: z.array(IssueRuleWithEnforceSchema).default([]),
+  issueComment: z.array(IssueRuleBaseSchema).default([]),
+  issueCreate: z.array(IssueRuleWithEnforceSchema).default([]),
+  issueSubIssue: z.array(IssueRuleBaseSchema).default([]),
+  issueDependency: z.array(IssueRuleBaseSchema).default([]),
   selfUserId: z.string().optional(),
   defaultPermission: z.literal("deny").default("deny"),
 });
