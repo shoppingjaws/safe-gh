@@ -110,12 +110,15 @@ function buildIssueEditArgs(
 ): string[] {
   const args = ["issue", "edit", String(context.issueNumber), "-R", context.repo];
 
-  if (options.title) {
-    let title: string = options.title;
-    if (permission.enforce?.titlePrefix && !title.startsWith(permission.enforce.titlePrefix)) {
-      title = `${permission.enforce.titlePrefix}${title}`;
+  if (permission.enforce?.titlePrefix) {
+    const currentTitle = options.title ?? context.issueTitle;
+    if (!currentTitle.startsWith(permission.enforce.titlePrefix)) {
+      args.push("--title", `${permission.enforce.titlePrefix}${currentTitle}`);
+    } else if (options.title) {
+      args.push("--title", options.title);
     }
-    args.push("--title", title);
+  } else if (options.title) {
+    args.push("--title", options.title);
   }
   if (options.body) args.push("--body", appendMarker(options.body));
   if (options.addLabel) args.push("--add-label", options.addLabel);

@@ -14,7 +14,10 @@ export function checkAllowedOwners(
   config: Config,
   repo: string
 ): PermissionCheckResult | null {
-  if (!config.allowedOwners || config.allowedOwners.length === 0) return null;
+  if (!config.allowedOwners) return null;
+  if (config.allowedOwners.length === 0) {
+    return { allowed: false, reason: "Blocked by global allowedOwners: no owners are allowed (empty list)" };
+  }
 
   const owner = repo.split("/")[0];
   if (!owner) {
@@ -56,7 +59,7 @@ export function checkIssueCondition(
 
   // labels
   if (condition.labels) {
-    if (condition.labels.include && condition.labels.include.length > 0) {
+    if (condition.labels.include) {
       if (!condition.labels.include.some((l) => context.labels.includes(l))) {
         return false;
       }
@@ -69,12 +72,12 @@ export function checkIssueCondition(
   }
 
   // repos
-  if (condition.repos && condition.repos.length > 0) {
+  if (condition.repos) {
     if (!condition.repos.includes(context.repo)) return false;
   }
 
   // owners
-  if (condition.owners && condition.owners.length > 0) {
+  if (condition.owners) {
     const owner = context.repo.split("/")[0];
     if (!owner || !condition.owners.includes(owner)) return false;
   }
@@ -86,6 +89,7 @@ export function checkIssueCondition(
 
   // parentIssue
   if (condition.parentIssue !== undefined) {
+    if (context.parentIssueNumber === null) return false;
     if (condition.parentIssue.number !== undefined) {
       if (context.parentIssueNumber !== condition.parentIssue.number) return false;
     }
