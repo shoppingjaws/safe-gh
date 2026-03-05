@@ -1,7 +1,7 @@
 import { describe, test, expect } from "bun:test";
-import { evaluateCommand } from "./evaluate.ts";
-import type { CommandInput, EvaluateResult } from "./evaluate.ts";
-import type { Config, IssueContext } from "./types.ts";
+import { evaluateCommand } from "../src/evaluate.ts";
+import type { CommandInput, EvaluateResult } from "../src/evaluate.ts";
+import type { Config, IssueContext } from "../src/types.ts";
 
 // ============================================================
 // Helpers
