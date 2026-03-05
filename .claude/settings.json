@@ -3,7 +3,8 @@
     "allow":[
       "Bash(bun run build)",
       "Bash(bun run typecheck)",
-      "Bash(bun run test)"
+      "Bash(bun run test)",
+      "Bash(bun test:*)"
     ],
     "ask": [
       "Edit(package.json)",
